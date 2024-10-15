@@ -9,7 +9,7 @@ import (
 )
 
 type Handler interface {
-	HandleSubmit(c *gin.Context) // rename
+	UpdatePrice(c *gin.Context) // rename
 }
 
 type handler struct {
@@ -22,19 +22,26 @@ func NewPriceUpdateHandler(updateSvc priceUpdateService.Service) Handler {
 	}
 }
 
-func (h *handler) HandleSubmit(c *gin.Context) {
-	var reqBody updatePriceModel.RequestBody
-
-	if err := c.ShouldBindJSON(&reqBody); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+func (h *handler) UpdatePrice(ginCtx *gin.Context) {
+	productID := ginCtx.Param("productID")
+	if productID == "" {
+		log.Printf("product id not found")
+		ginCtx.JSON(http.StatusBadRequest, gin.H{"error": "product id not found"})
 		return
 	}
 
-	err := h.updateSvc.Process(reqBody)
-	if err != nil {
-		log.Printf("Failed to process request: %v", err)
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to process request"})
+	var reqBody updatePriceModel.RequestBody
+	if err := ginCtx.ShouldBindJSON(&reqBody); err != nil {
+		log.Printf("Failed to unmarshall request body: %v", err)
+		ginCtx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"status": "success"})
+	err := h.updateSvc.Process(ginCtx, productID, reqBody)
+	if err != nil {
+		log.Printf("Failed to process request: %v", err)
+		ginCtx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to process request"})
+	}
+
+	ginCtx.JSON(http.StatusOK, gin.H{"status": "success"})
 }

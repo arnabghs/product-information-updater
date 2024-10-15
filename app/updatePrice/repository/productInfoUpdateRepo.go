@@ -1,10 +1,12 @@
 package priceUpdateRepository
 
+//go:generate mockgen -source=productInfoUpdateRepo.go -destination=./mocks/mock_productInfoUpdateRepo.go
+
 import (
 	"context"
 	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/mongo"
 	"log"
+	"product-information-updater/app/dbUtils"
 	updatePriceModel "product-information-updater/app/updatePrice/models"
 	"time"
 )
@@ -14,10 +16,10 @@ type ProductUpdateInfoRepo interface {
 }
 
 type productUpdateInfoRepo struct {
-	mongoCollection *mongo.Collection
+	mongoCollection dbUtils.MongoCollection
 }
 
-func NewProductUpdateInfoRepo(mongoCollection *mongo.Collection) ProductUpdateInfoRepo {
+func NewProductUpdateInfoRepo(mongoCollection dbUtils.MongoCollection) ProductUpdateInfoRepo {
 	return productUpdateInfoRepo{
 		mongoCollection: mongoCollection,
 	}

@@ -8,6 +8,7 @@ type RequestBody struct {
 }
 
 type ProductEvent struct {
-	ID      string `json:"id" bson:"id"`
-	Message string `json:"message" bson:"message"`
+	ID        string `json:"id" bson:"id"`
+	Message   string `json:"message" bson:"message"`
+	ProductID string `json:"productID" bson:"productID"`
 }

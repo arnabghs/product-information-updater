@@ -1,27 +1,31 @@
 package priceUpdateService
 
+//go:generate mockgen -source=priceUpdateService.go -destination=./mocks/mock_priceUpdateService.go
+
 import (
 	"fmt"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/sns"
+	"github.com/gin-gonic/gin"
 	"log"
+	"product-information-updater/app/queueUtils"
 	"product-information-updater/app/updatePrice/models"
 	"product-information-updater/app/updatePrice/repository"
 )
 
 type Service interface {
-	Process(request updatePriceModel.RequestBody) error
-	saveToDb(request updatePriceModel.RequestBody) error
-	publishToSNS(message updatePriceModel.RequestBody) error
+	Process(ginCtx *gin.Context, productID string, request updatePriceModel.RequestBody) error
+	SaveToDb(request updatePriceModel.ProductEvent) error
+	PublishToSNS(message updatePriceModel.ProductEvent) error
 }
 
 type service struct {
 	productRepo priceUpdateRepository.ProductUpdateInfoRepo
 	snsTopicARN string
-	snsSession  *sns.SNS
+	snsSession  queueUtils.SNSSession
 }
 
-func NewPriceUpdateService(productRepo priceUpdateRepository.ProductUpdateInfoRepo, snsTopicARN string, snsSession *sns.SNS) Service {
+func NewPriceUpdateService(productRepo priceUpdateRepository.ProductUpdateInfoRepo, snsTopicARN string, snsSession queueUtils.SNSSession) Service {
 	return &service{
 		productRepo: productRepo,
 		snsTopicARN: snsTopicARN,
@@ -29,18 +33,23 @@ func NewPriceUpdateService(productRepo priceUpdateRepository.ProductUpdateInfoRe
 	}
 }
 
-func (s service) Process(request updatePriceModel.RequestBody) error {
-	// map to DB schema
-	document := request
+func (s service) Process(ginCtx *gin.Context, productID string, request updatePriceModel.RequestBody) error {
+	// use this context for creating logger, tracing spans etc
 
-	saveErr := s.saveToDb(document)
+	// mapper
+	paylaod := updatePriceModel.ProductEvent{
+		ID:        request.ID,
+		Message:   request.Message,
+		ProductID: productID,
+	}
+
+	saveErr := s.SaveToDb(paylaod)
 	if saveErr != nil {
 		log.Printf("Failed to save to DB: %v", saveErr)
 		return saveErr
 	}
 
-	// use a go routine for async tasks
-	publishErr := s.publishToSNS(document)
+	publishErr := s.PublishToSNS(paylaod)
 	if publishErr != nil {
 		log.Printf("Failed to publish to SNS: %v", publishErr)
 		return publishErr
@@ -49,18 +58,12 @@ func (s service) Process(request updatePriceModel.RequestBody) error {
 	return nil
 }
 
-func (s service) saveToDb(request updatePriceModel.RequestBody) error {
-	// mapper
-	paylaod := updatePriceModel.ProductEvent{
-		ID:      request.ID,
-		Message: request.Message,
-	}
-
-	return s.productRepo.Save(paylaod)
+func (s service) SaveToDb(payload updatePriceModel.ProductEvent) error {
+	return s.productRepo.Save(payload)
 }
 
-func (s service) publishToSNS(message updatePriceModel.RequestBody) error {
-	msg := fmt.Sprintf("ID: %s, Message: %s", message.ID, message.Message)
+func (s service) PublishToSNS(message updatePriceModel.ProductEvent) error {
+	msg := fmt.Sprintf("ID: %s, Message: %s, ProductID: %s", message.ID, message.Message, message.ProductID)
 	publishInput := &sns.PublishInput{
 		Message:  aws.String(msg),
 		TopicArn: aws.String(s.snsTopicARN),

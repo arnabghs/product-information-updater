@@ -4,20 +4,23 @@ import (
 	"github.com/aws/aws-sdk-go/service/sns"
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/mongo"
+	"product-information-updater/app/dbUtils"
+	"product-information-updater/app/queueUtils"
 	"product-information-updater/app/updatePrice/controller"
 	"product-information-updater/app/updatePrice/repository"
 	"product-information-updater/app/updatePrice/service"
 )
 
 func InitializeRouter(snsTopicARN string, snsSession *sns.SNS, mongoCollection *mongo.Collection) *gin.Engine {
-	//gin.SetMode(gin.ReleaseMode)
 	router := gin.Default()
 
-	productUpdateInfoRepo := priceUpdateRepository.NewProductUpdateInfoRepo(mongoCollection)
-	priceUpdateSvc := priceUpdateService.NewPriceUpdateService(productUpdateInfoRepo, snsTopicARN, snsSession)
+	snsSess := queueUtils.NewSNSSession(snsSession)
+	mongoColl := dbUtils.NewMongoColl(mongoCollection)
+	productUpdateInfoRepo := priceUpdateRepository.NewProductUpdateInfoRepo(mongoColl)
+	priceUpdateSvc := priceUpdateService.NewPriceUpdateService(productUpdateInfoRepo, snsTopicARN, snsSess)
 	priceUpdateHandler := priceUpdatecontroller.NewPriceUpdateHandler(priceUpdateSvc)
 
-	router.POST("/submit", priceUpdateHandler.HandleSubmit)
+	router.POST("api/v1/products/:productID", priceUpdateHandler.UpdatePrice)
 
 	return router
 }

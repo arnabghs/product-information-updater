@@ -7,6 +7,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	envConstants "product-information-updater/constants"
 	"product-information-updater/router"
 	"time"
 
@@ -53,34 +54,35 @@ func main() {
 
 // InitializeApp sets up the application with all dependencies
 func InitializeApp() (*App, error) {
+	// TODO: use https://github.com/caarlos0/env?tab=readme-ov-file for loading envs to a struct
+
 	// Connect to MongoDB
-	mongoURI := os.Getenv("MONGO_URI")
+	mongoURI := os.Getenv(envConstants.MONGO_URI)
 	if mongoURI == "" {
 		return nil, fmt.Errorf("MONGO_URI is not set")
 	}
-	mongoDB := os.Getenv("MONGO_DB")
+	mongoDB := os.Getenv(envConstants.MONGO_DB)
 	if mongoDB == "" {
 		return nil, fmt.Errorf("MONGO_DB is not set")
 	}
-	mongoCollection := os.Getenv("MONGO_COLLECTION")
+	mongoCollection := os.Getenv(envConstants.MONGO_COLLECTION)
 	if mongoCollection == "" {
 		return nil, fmt.Errorf("MONGO_COLLECTION is not set")
 	}
-	mongoUsername := os.Getenv("MONGO_USERNAME")
+	mongoUsername := os.Getenv(envConstants.MONGO_USERNAME)
 	if mongoUsername == "" {
 		return nil, fmt.Errorf("MONGO_USERNAME is not set")
 	}
-	mongoPassword := os.Getenv("MONGO_PASSWORD")
+	mongoPassword := os.Getenv(envConstants.MONGO_PASSWORD)
 	if mongoPassword == "" {
 		return nil, fmt.Errorf("MONGO_PASSWORD is not set")
 	}
-	mongoAuthSource := os.Getenv("MONGO_AUTH_SOURCE")
+	mongoAuthSource := os.Getenv(envConstants.MONGO_AUTH_SOURCE)
 	if mongoPassword == "" {
 		return nil, fmt.Errorf("MONGO_AUTH_SOURCE is not set")
 	}
 
 	var cred options.Credential
-
 	cred.AuthSource = mongoAuthSource
 	cred.Username = mongoUsername
 	cred.Password = mongoPassword
@@ -101,20 +103,22 @@ func InitializeApp() (*App, error) {
 	log.Println("Connected to MongoDB")
 
 	// Initialize AWS SNS session
-	awsRegion := os.Getenv("AWS_REGION")
+	awsRegion := os.Getenv(envConstants.AWS_REGION)
 	if awsRegion == "" {
 		return nil, fmt.Errorf("AWS_REGION is not set")
 	}
-	awsAccessKeyId := os.Getenv("AWS_ACCESS_KEY_ID")
+	awsAccessKeyId := os.Getenv(envConstants.AWS_ACCESS_KEY_ID)
 	if awsAccessKeyId == "" {
 		return nil, fmt.Errorf("AWS_ACCESS_KEY_ID is not set")
 	}
-	awsSecretAccessKey := os.Getenv("AWS_SECRET_ACCESS_KEY")
+	awsSecretAccessKey := os.Getenv(envConstants.AWS_SECRET_ACCESS_KEY)
 	if awsSecretAccessKey == "" {
 		return nil, fmt.Errorf("AWS_SECRET_ACCESS_KEY is not set")
 	}
-
-	snsEndpoint := "http://localhost:4566" // TODO
+	snsEndpoint := os.Getenv(envConstants.SNS_ENDPOINT)
+	if awsSecretAccessKey == "" {
+		return nil, fmt.Errorf("SNS_ENDPOINT is not set")
+	}
 
 	sess, err := session.NewSession(&aws.Config{
 		Region:      aws.String(awsRegion),
@@ -129,7 +133,7 @@ func InitializeApp() (*App, error) {
 
 	snsClient := sns.New(sess)
 
-	snsTopicARN := os.Getenv("AWS_SNS_TOPIC_ARN")
+	snsTopicARN := os.Getenv(envConstants.AWS_SNS_TOPIC_ARN)
 	if snsTopicARN == "" {
 		return nil, fmt.Errorf("AWS_SNS_TOPIC_ARN is not set")
 	}

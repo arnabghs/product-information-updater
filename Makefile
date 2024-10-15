@@ -4,3 +4,8 @@ local_setup_up:
 local_setup_down:
 	 docker-compose -f docker-compose.yml down -v
 
+test:
+	go test -cover ./...
+
+run:
+	go run main.go
