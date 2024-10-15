@@ -30,14 +30,26 @@ Notes
 <br>
 Diagram 1: Using VPN for multi/hybrid cloud connection
 <br>
- <img width="1350" alt="1" src="https://github.com/user-attachments/assets/cb01d138-fa2e-4bc0-bd65-f7c1e3fe3d93">
+
+
+ <img width="1654" alt="Screenshot 2024-10-15 at 1 41 39 PM" src="https://github.com/user-attachments/assets/b6b3933f-518f-4ebc-bd19-abaf44efbd25">
+
+
 <br>
-#### We Can replace Private VPN Tunnels with HTTPs calls to reduce cost and additional VPN setup
+
+
+
+We Can replace Private VPN Tunnels with HTTPs calls to reduce cost and additional VPN setup
 However it'll increase latency and will be less secured
+
+
 <br>
 
 Diagram 2: Using public Internet for multi/hybrid cloud connection
 <br>
+
+
+
 <img width="1161" alt="2" src="https://github.com/user-attachments/assets/55f1d58d-834c-4842-a8be-e0917c8c3678">
 
 
