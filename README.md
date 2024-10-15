@@ -9,7 +9,7 @@
 <br>
 [3. API Design](https://github.com/arnabghs/product-information-updater/blob/main/ADR/3.%20APIDesign/api.md)
 <br>
-[4. High Level Design]()
+[4. High Level Design](https://github.com/arnabghs/product-information-updater/blob/main/ADR/4.%20highLevelDesign/design.md)
 <br>
 [5. Database Selection](https://github.com/arnabghs/product-information-updater/blob/main/ADR/5.%20databaseSelection/dbSelection.md)
 <br>
