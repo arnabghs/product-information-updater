@@ -1,5 +1,5 @@
 ## About
-
+Implementation of micro-services app with event-driven architecture for real-time product update across geographies.
 ---
 ## ADR
 
