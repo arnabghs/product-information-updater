@@ -81,7 +81,16 @@ SNS_ENDPOINT=http://localhost:4566
 make run
 ```
 
-### Hit endpoint
+### Run Product Promotion Lambda
+```
+make run_lambda_receiver
+```
+It will immediately start polling from the SQS.
+At a interval of every 10 seconds, it will keep polling for 5 seconds.
+Its important to keep a watch on the logs.
+
+
+### Hit Update endpoint
 ```
 curl --location 'http://localhost:8080/api/v1/products/pid123' \
 --header 'Content-Type: application/json' \
@@ -97,6 +106,8 @@ curl --location 'http://localhost:8080/api/v1/products/pid123' \
     "status": "success"
 }
 ```
+
+**In the Product Promotion Lambda shell, we will see it will receive the message, log it and then delete it also.**
 
 ### mongo DB will get updated
 ```
@@ -114,7 +125,7 @@ curl --location 'http://localhost:8080/api/v1/products/pid123' \
 ]
 ```
 
-### SQS will receive the event from SNS
+### If you do not delete the messages in receier lambda, this command will show the events from SQS
 ```
 #Read from SQS command
 

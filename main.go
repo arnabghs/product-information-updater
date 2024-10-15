@@ -123,9 +123,8 @@ func InitializeApp() (*App, error) {
 	sess, err := session.NewSession(&aws.Config{
 		Region:      aws.String(awsRegion),
 		Credentials: credentials.NewStaticCredentials(awsAccessKeyId, awsSecretAccessKey, ""),
-
-		Endpoint:   aws.String(snsEndpoint),
-		DisableSSL: aws.Bool(true),
+		Endpoint:    aws.String(snsEndpoint),
+		DisableSSL:  aws.Bool(true),
 	})
 	if err != nil {
 		return nil, fmt.Errorf("failed to create AWS session: %v", err)

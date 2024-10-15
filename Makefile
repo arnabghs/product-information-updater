@@ -9,3 +9,6 @@ test:
 
 run:
 	go run main.go
+
+run_lambda_receiver:
+	 cd cmd/productPromotionLambda && go run main.go
