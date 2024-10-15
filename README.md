@@ -4,13 +4,21 @@
 ## ADR
 
 [1. Requirements](https://github.com/arnabghs/product-information-updater/blob/main/ADR/1.%20requirements/requirements.md)
+<br>
 [2. Capacity Estimation](https://github.com/arnabghs/product-information-updater/blob/main/ADR/2.%20capacityEstimation/estimation.md)
+<br>
 [3. API Design](https://github.com/arnabghs/product-information-updater/blob/main/ADR/3.%20APIDesign/api.md)
+<br>
 [4. High Level Design]()
+<br>
 [5. Database Selection](https://github.com/arnabghs/product-information-updater/blob/main/ADR/5.%20databaseSelection/dbSelection.md)
+<br>
 [6. Data Modelling](https://github.com/arnabghs/product-information-updater/blob/main/ADR/6.%20dataModelling/dataModelling.md)
+<br>
 [7. Deployment Strategy](https://github.com/arnabghs/product-information-updater/blob/main/ADR/7.%20deploymentStrategy/deployment.md)
+<br>
 [8. Release Strategy](https://github.com/arnabghs/product-information-updater/blob/main/ADR/8.%20releaseStrategy/release.md)
+<br>
 
 
 ---
