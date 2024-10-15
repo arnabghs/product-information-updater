@@ -1,4 +1,4 @@
-## Daily/Monthly Active Users :**
+## Daily/Monthly Active Users :
 
 Depends on the pricing managers
 
